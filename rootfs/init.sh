@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-ls -l /cloudposse/jenkins/plugins.d | xargs cat | xargs /usr/local/bin/install-plugins.sh
+find /cloudposse/jenkins/plugins.d/ -type f -exec /usr/local/bin/install-plugins.sh {} \;
 
-/usr/local/bin/jenkins.sh
+exec /usr/local/bin/jenkins.sh
