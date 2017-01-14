@@ -14,8 +14,8 @@ ARG BUILD_JENKINS_PLUGINS="\
       slack:2.1 \
       greenballs:1.15 \
       "
-#ADD rootfs /
+ADD rootfs /
 
 RUN /usr/local/bin/install-plugins.sh $BUILD_JENKINS_PLUGINS
 
-#ENTRYPOINT ["/bin/tini", "--", "/init.sh"]
+ENTRYPOINT ["/bin/tini", "--", "/init.sh"]
