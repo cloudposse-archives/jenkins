@@ -1,4 +1,4 @@
-FROM jenkins:alpine
+FROM jenkins:2.32.1-alpine
 
 ARG BUILD_JENKINS_PLUGINS="\
       kubernetes:0.10 \
