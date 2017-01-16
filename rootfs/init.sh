@@ -5,6 +5,6 @@
 
 [ -d /cloudposse/jenkins/jobs.d/ ] && \
   ls  /cloudposse/jenkins/jobs.d | xargs -I {} mkdir -p /var/jenkins_home/jobs/{}  && \
-  ls  /cloudposse/jenkins/jobs.d | xargs -I {} cp -n /cloudposse/jenkins/jobs.d/{} /var/jenkins_home/jobs/{}/confg.xml
+  ls  /cloudposse/jenkins/jobs.d | xargs -I {} cp -n /cloudposse/jenkins/jobs.d/{} /var/jenkins_home/jobs/{}/config.xml
 
 exec /usr/local/bin/jenkins.sh "$*"
