@@ -6,3 +6,8 @@ export BUILD_HARNESS_PATH ?= $(shell until [ -d "build-harness" ] || [ "`pwd`" =
 ## Init build-harness
 init:
 	@curl --retry 5 --retry-delay 1 https://raw.githubusercontent.com/cloudposse/build-harness/master/bin/install.sh | bash
+
+.PHONY : clean
+## Clean build-harness
+clean:
+	@rm -rf $(BUILD_HARNESS_PATH)
