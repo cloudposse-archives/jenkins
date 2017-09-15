@@ -10,6 +10,6 @@ ADD rootfs /
 
 RUN /usr/local/bin/install-plugins.sh $BUILD_JENKINS_PLUGINS
 
-EXPOSE 80:8080
+EXPOSE 8080
 
 #ENTRYPOINT ["/bin/tini", "--", "/init.sh"]
