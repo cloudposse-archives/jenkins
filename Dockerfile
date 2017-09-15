@@ -1,5 +1,7 @@
 FROM jenkins:2.32.1-alpine
 
+USER root
+
 ARG BUILD_JENKINS_PLUGINS="\
       kubernetes:0.10 \
       build-token-root:1.4 \
