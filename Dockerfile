@@ -1,6 +1,5 @@
 FROM jenkins/jenkins:lts
-
-#USER root
+#FROM jenkins:alpine
 
 ARG BUILD_JENKINS_PLUGINS="\
       git:3.5.1 \
@@ -9,21 +8,13 @@ ARG BUILD_JENKINS_PLUGINS="\
 
 ADD rootfs /
 
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Dhudson.DNSMultiCast.disabled=true -Djava.awt.headless=true"
+
 RUN /usr/local/bin/install-plugins.sh $BUILD_JENKINS_PLUGINS
 
+ENV JENKINS_USER admin
+ENV JENKINS_PASS admin
+
+COPY jenkins_init.groovy /usr/share/jenkins/ref/init.groovy.d/
+
 EXPOSE 8080
-
-ENV JVM_OPTS="-Dhudson.udp=-1                                  \
-               -Djava.awt.headless=true                        \
-               -Dhudson.DNSMultiCast.disabled=true             \
-               -Djenkins.install.runSetupWizard=false          \
-               "
-
-ENV JENKINS_OPTS="--argumentsRealm.passwd.admin=admin          \
-                   --argumentsRealm.roles.user=admin           \
-                   --argumentsRealm.roles.admin=admin          \
-                   "
-
-ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Dhudson.DNSMultiCast.disabled=true -Djava.awt.headless=true --argumentsRealm.passwd.admin=admin --argumentsRealm.roles.user=admin --argumentsRealm.roles.admin=admin"
-
-#ENTRYPOINT ["/bin/tini", "--", "/init.sh"]
