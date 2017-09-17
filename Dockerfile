@@ -1,4 +1,4 @@
-FROM jenkins:alpine
+FROM jenkins/jenkins:lts
 
 ARG BUILD_JENKINS_PLUGINS="\
       git:3.5.1 \
