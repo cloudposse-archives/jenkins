@@ -24,4 +24,6 @@ ENV JENKINS_OPTS="--argumentsRealm.passwd.admin=admin          \
                    --argumentsRealm.roles.admin=admin          \
                    "
 
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Dhudson.DNSMultiCast.disabled=true -Djava.awt.headless=true --argumentsRealm.passwd.admin=admin --argumentsRealm.roles.user=admin --argumentsRealm.roles.admin=admin"
+
 #ENTRYPOINT ["/bin/tini", "--", "/init.sh"]
