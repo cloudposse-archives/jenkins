@@ -8,7 +8,7 @@ def env = System.getenv()
 
 def jenkins = Jenkins.getInstance()
 jenkins.setSecurityRealm(new HudsonPrivateSecurityRealm(false))
-jenkins.setAuthorizationStrategy(new FullControlOnceLoggedInAuthorizationStrategy())
+jenkins.setAuthorizationStrategy(new GlobalMatrixAuthorizationStrategy())
 
 def user = jenkins.getSecurityRealm().createAccount(env.JENKINS_USER, env.JENKINS_PASS)
 user.save()

@@ -3,6 +3,7 @@ FROM jenkins/jenkins:lts
 ARG BUILD_JENKINS_PLUGINS="\
       git:3.5.1 \
       github-oauth:0.27 \
+      matrix-auth \
       "
 
 ADD rootfs /
