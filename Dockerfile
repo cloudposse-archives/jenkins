@@ -1,5 +1,4 @@
-FROM jenkins/jenkins:lts
-#FROM jenkins:alpine
+FROM jenkins:alpine
 
 ARG BUILD_JENKINS_PLUGINS="\
       git:3.5.1 \
@@ -13,7 +12,7 @@ ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Dhudson.DNSMultiCast.disa
 RUN /usr/local/bin/install-plugins.sh $BUILD_JENKINS_PLUGINS
 
 ENV JENKINS_USER admin
-ENV JENKINS_PASS admin
+ENV JENKINS_PASS sec007
 
 COPY jenkins_init.groovy /usr/share/jenkins/ref/init.groovy.d/
 
