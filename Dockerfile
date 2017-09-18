@@ -25,8 +25,11 @@ ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Dhudson.DNSMultiCast.disa
 
 RUN /usr/local/bin/install-plugins.sh $BUILD_JENKINS_PLUGINS
 
-ENV JENKINS_USER admin
-ENV JENKINS_PASS sec007
+# Specify the initial user name for Jenkins admin user
+# ENV JENKINS_USER xxxxxxx
+
+# Specify the initial password for Jenkins admin user
+# ENV JENKINS_PASS xxxxxxx
 
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/
 
