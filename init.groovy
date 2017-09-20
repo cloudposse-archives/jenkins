@@ -4,11 +4,20 @@ import hudson.security.*
 import jenkins.model.*
 import jenkins.security.s2m.AdminWhitelistRule
 
+def env = System.getenv()
+
+if (!env.JENKINS_USER) {
+    throw new Throwable("`JENKINS_USER' ENV variable required")
+}
+
+if (!env.JENKINS_PASS) {
+    throw new Throwable("`JENKINS_PASS' ENV variable required")
+}
+
 def jenkins = Jenkins.getInstance()
 jenkins.setSecurityRealm(new HudsonPrivateSecurityRealm(false))
 jenkins.setAuthorizationStrategy(new GlobalMatrixAuthorizationStrategy())
 
-def env = System.getenv()
 def user = jenkins.getSecurityRealm().createAccount(env.JENKINS_USER, env.JENKINS_PASS)
 user.save()
 
