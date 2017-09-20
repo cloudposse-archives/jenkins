@@ -1,4 +1,5 @@
-FROM jenkins/jenkins:lts
+#https://hub.docker.com/r/jenkins/jenkins/tags/
+FROM jenkins/jenkins:2.79-alpine
 
 ARG BUILD_JENKINS_PLUGINS="\
       git:3.5.1 \
@@ -12,8 +13,8 @@ ARG BUILD_JENKINS_PLUGINS="\
       envinject:2.1.3 \
       text-file-operations:1.3.2 \
       pipeline-githubnotify-step:1.0.3 \
-      blueocean:1.2.2 \
-      blueocean-github-pipeline:1.2.2 \
+      blueocean:1.2.4 \
+      blueocean-github-pipeline:1.2.4 \
       blueocean-display-url:2.1.0 \
       slack:2.3 \
       greenballs:1.15 \
@@ -24,12 +25,6 @@ ADD rootfs /
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Dhudson.DNSMultiCast.disabled=true -Djava.awt.headless=true"
 
 RUN /usr/local/bin/install-plugins.sh $BUILD_JENKINS_PLUGINS
-
-# Specify the initial user name for Jenkins admin user
-# ENV JENKINS_USER xxxxxxx
-
-# Specify the initial password for Jenkins admin user
-# ENV JENKINS_PASS xxxxxxx
 
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/
 
