@@ -1,5 +1,5 @@
 #https://hub.docker.com/r/jenkins/jenkins/tags/
-FROM jenkins/jenkins:2.79-alpine
+FROM jenkins/jenkins:2.80-alpine
 
 ARG BUILD_JENKINS_PLUGINS="\
       git:3.5.1 \

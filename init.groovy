@@ -7,11 +7,11 @@ import jenkins.security.s2m.AdminWhitelistRule
 def env = System.getenv()
 
 if (!env.JENKINS_USER) {
-    throw new Throwable("`JENKINS_USER' ENV variable required")
+    throw new Throwable("`JENKINS_USER' ENV variable is required to create the initial admin user")
 }
 
 if (!env.JENKINS_PASS) {
-    throw new Throwable("`JENKINS_PASS' ENV variable required")
+    throw new Throwable("`JENKINS_PASS' ENV variable required to create the initial admin user")
 }
 
 def jenkins = Jenkins.getInstance()
@@ -25,4 +25,4 @@ jenkins.getAuthorizationStrategy().add(Jenkins.ADMINISTER, env.JENKINS_USER)
 jenkins.save()
 
 Jenkins.instance.getInjector().getInstance(AdminWhitelistRule.class).setMasterKillSwitch(false)
-Jenkins.instance.setNumExecutors(0)
+Jenkins.instance.setNumExecutors(5)
