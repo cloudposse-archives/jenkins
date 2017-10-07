@@ -16,6 +16,8 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the Docker image to ECR...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - envsubst < "Dockerrun.aws.json.template" > "Dockerrun.aws.json"
 artifacts:
   files:
-    - '**/*'
+    - 'Dockerrun.aws.json'
+    - '.ebextensions/*'

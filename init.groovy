@@ -14,6 +14,11 @@ if (!env.JENKINS_PASS) {
     throw new Throwable("`JENKINS_PASS' ENV variable required to create the initial admin user")
 }
 
+int num_executors = 2
+if (env.JENKINS_NUM_EXECUTORS) {
+    num_executors = env.JENKINS_NUM_EXECUTORS
+}
+
 def jenkins = Jenkins.getInstance()
 jenkins.setSecurityRealm(new HudsonPrivateSecurityRealm(false))
 jenkins.setAuthorizationStrategy(new GlobalMatrixAuthorizationStrategy())
@@ -25,4 +30,4 @@ jenkins.getAuthorizationStrategy().add(Jenkins.ADMINISTER, env.JENKINS_USER)
 jenkins.save()
 
 Jenkins.instance.getInjector().getInstance(AdminWhitelistRule.class).setMasterKillSwitch(false)
-Jenkins.instance.setNumExecutors(5)
+Jenkins.instance.setNumExecutors(num_executors)

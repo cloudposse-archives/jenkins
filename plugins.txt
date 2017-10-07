@@ -1,0 +1,16 @@
+git:3.6.0
+github-oauth:0.27
+matrix-auth:1.7
+workflow-aggregator:2.5
+docker-workflow:1.13
+credentials-binding:1.13
+kubernetes:1.0
+build-token-root:1.4
+envinject:2.1.3
+text-file-operations:1.3.2
+pipeline-githubnotify-step:1.0.3
+blueocean:1.2.4
+blueocean-github-pipeline:1.2.4
+blueocean-display-url:2.1.0
+slack:2.3
+greenballs:1.15
