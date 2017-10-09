@@ -1,0 +1,8 @@
+- hosts: localhost
+  remote_user: root
+
+  tasks:
+
+    - shell: echo $HI
+      environment:
+         HI: test1
