@@ -6,8 +6,7 @@ This was originally documented by [David Hollenberger](http://davidhollenberger.
 
 ### Register Github Application
 
-- Go to your Github Settings page, then Applications.
-- Click “Register new application”.
+- Register a new [GitHub OAuth Applications](https://github.com/settings/applications/new).
 - Fill out registration form. Make sure to enter `http://jenkins.dns.address/securityRealm/finishLogin` for the Authorization Calback URL.
 
 ### Jenkins configuration
