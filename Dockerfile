@@ -12,9 +12,6 @@ RUN adduser jenkins docker
 # Drop back to the regular jenkins user
 USER jenkins
 
-ARG build=dev
-ARG commit=dev
-
 # 1. Disable Jenkins setup Wizard UI. The initial user and password will be supplied by Terraform via ENV vars during infrastructure creation
 # 2. Set Java DNS TTL to 60 seconds
 # http://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-jvm-ttl.html

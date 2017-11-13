@@ -1,6 +1,0 @@
-- name: Install and configure NTPd
-  hosts:  localhost
-  become: true
-
-  roles:
-    - role: ntpd
