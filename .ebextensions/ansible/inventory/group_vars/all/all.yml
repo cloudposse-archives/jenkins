@@ -1,0 +1,19 @@
+# Pin agent to a version. Highly recommended.
+rpm_agent_version: "5.17.1"
+
+# Set this to `yes` to allow agent downgrades on apt-based platforms.
+# Internally, this uses `apt-get`'s `--force-yes` option. Use with caution.
+datadog_agent_allow_downgrade: no
+
+datadog:
+  api_key: change
+  autostart_agent: yes
+  dd_url: https://app.datadoghq.com
+  default_tags: [ ]
+  enabled: yes
+  integrations: { }
+  socket: "/opt/datadog-agent/run/datadog-supervisor.sock"
+  tags: [ ]
+
+# Default TimeZone
+ntp_timezone: Etc/UTC

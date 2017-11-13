@@ -14,9 +14,9 @@ if (!env.JENKINS_PASS) {
     throw new Throwable("`JENKINS_PASS' ENV variable required to create the initial admin user")
 }
 
-int num_executors = 2
+int num_executors = 4
 if (env.JENKINS_NUM_EXECUTORS) {
-    num_executors = env.JENKINS_NUM_EXECUTORS
+    num_executors = env.JENKINS_NUM_EXECUTORS.toInteger()
 }
 
 def jenkins = Jenkins.getInstance()

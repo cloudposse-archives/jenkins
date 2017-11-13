@@ -1,0 +1,38 @@
+# https://github.com/DataDog/dd-agent/issues/2932
+# https://github.com/DataDog/integrations-core/blob/2209b0c316378fcde2563b49c9200e0ffef18d91/disk/conf.yaml.default#L33
+# https://github.com/sagansystems/datadog/pull/42/files#diff-db2834443433c981fa5540ce09e0cdb6R13
+
+init_config:
+
+instances:
+  # The use_mount parameter will instruct the check to collect disk
+  # and fs metrics using mount points instead of volumes
+  - use_mount: no
+    # The (optional) excluded_filesystems parameter will instruct the check to
+    # ignore disks using these filesystems
+    excluded_filesystems:
+      - tmpfs
+      - netns
+      - shm
+
+    # https://jira.gladly.qa/browse/DEV-12005
+    # excluded_mountpoint_re: /host/proc/sys/fs/binfmt_misc
+
+    # The (optional) excluded_disks parameter will instruct the check to
+    # ignore this list of disks
+    # excluded_disks:
+    #   - /dev/sda1
+    #   - /dev/sda2
+    #
+    # The (optional) excluded_disk_re parameter will instruct the check to
+    # ignore all disks matching this regex
+    excluded_disk_re: /var/run/docker/netns/*
+    #
+    # The (optional) tag_by_filesystem parameter will instruct the check to
+    # tag all disks with their filesystem (for ex: filesystem:nfs)
+    # tag_by_filesystem: no
+    #
+    # The (optional) all_partitions parameter will instruct the check to
+    # get metrics for all partitions. use_mount should be set to yes (to avoid
+    # collecting empty device names) when using this option.
+    # all_partitions: no

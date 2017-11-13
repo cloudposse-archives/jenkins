@@ -2,8 +2,20 @@
   "AWSEBDockerrunVersion": "1",
   "Volumes": [
     {
-      "HostDirectory": "/var/jenkins_home",
-      "ContainerDirectory": "/var/jenkins_home"
+        "HostDirectory": "/var/jenkins_home",
+        "ContainerDirectory": "/var/jenkins_home"
+    },
+    {
+        "HostDirectory": "/var/run/docker.sock",
+        "ContainerDirectory": "/var/run/docker.sock"
+    },
+    {
+        "HostDirectory": "/proc/",
+        "ContainerDirectory": "/host/proc/"
+    },
+    {
+        "HostDirectory": "/cgroup/",
+        "ContainerDirectory": "/host/sys/fs/cgroup"
     }
   ],
   "Image": {

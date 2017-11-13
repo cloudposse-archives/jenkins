@@ -1,0 +1,10 @@
+- name: Install and configure Datadog
+  hosts:  localhost
+  vars:
+    datadog:
+      api_key: "{{ datadog_api_key }}"
+      hostname: "{{ datadog_hostname }}"
+  become: true
+
+  roles:
+    - role: datadog
