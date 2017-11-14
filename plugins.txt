@@ -1,5 +1,5 @@
 git:3.6.0
-github-oauth:0.27
+github-oauth:0.28.1
 matrix-auth:2.1
 workflow-aggregator:2.5
 docker-workflow:1.13
