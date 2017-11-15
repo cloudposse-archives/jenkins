@@ -66,6 +66,7 @@ def configureMatrixAuthorizationStrategy = { jenkinsUser, jenkinsPassword ->
     if (!isValidString(jenkinsPassword)) {
         throw new Throwable("'JENKINS_PASS' is required to create the initial admin user")
     }
+
     jenkins.setSecurityRealm(new HudsonPrivateSecurityRealm(false))
     jenkins.setAuthorizationStrategy(new GlobalMatrixAuthorizationStrategy())
     def user = jenkins.getSecurityRealm().createAccount(jenkinsUser, jenkinsPassword)
@@ -74,23 +75,105 @@ def configureMatrixAuthorizationStrategy = { jenkinsUser, jenkinsPassword ->
     jenkins.save()
 }
 
-// Configure Authorization Strategy ('GitHub' or 'Matrix')
+// Configure SAML Security
+def configureSAMLAuthorizationStrategy = { idpMetadata,
+                                           displayNameAttributeName,
+                                           groupsAttributeName,
+                                           maximumAuthenticationLifetime,
+                                           usernameAttributeName,
+                                           emailAttributeName,
+                                           logoutUrl,
+                                           usernameCaseConversion,
+                                           binding ->
+    if (!isValidString(idpMetadata)) {
+        throw new Throwable("'JENKINS_SAML_IDP_METADATA' is required")
+    }
+    if (!isValidString(displayNameAttributeName)) {
+        throw new Throwable("'JENKINS_SAML_DISPLAY_NAME_ATTRIBUTE_NAME' is required")
+    }
+    if (!isValidString(groupsAttributeName)) {
+        throw new Throwable("'JENKINS_SAML_GROUPS_ATTRIBUTE_NAME' is required")
+    }
+    if (!isValidString(maximumAuthenticationLifetime)) {
+        throw new Throwable("'JENKINS_SAML_MAXIMUM_AUTHENTICATION_LIFETIME' is required")
+    }
+    if (!isValidString(usernameAttributeName)) {
+        throw new Throwable("'JENKINS_SAML_USERNAME_ATTRIBUTE_NAME' is required")
+    }
+    if (!isValidString(emailAttributeName)) {
+        throw new Throwable("'JENKINS_SAML_EMAIL_ATTRIBUTE_NAME' is required")
+    }
+
+    /**
+     * @param idpMetadata                       Identity provider Metadata.
+     * @param displayNameAttributeName          attribute that has the displayname.
+     * @param groupsAttributeName               attribute that has the groups.
+     * @param maximumAuthenticationLifetime     maximum time that an identification it is valid.
+     * @param usernameAttributeName             attribute that has the username.
+     * @param emailAttributeName                attribute that has the email.
+     * @param logoutUrl                         optional URL to redirect on logout.
+     * @param advancedConfiguration             advanced configuration settings.
+     * @param encryptionData                    encryption configuration settings.
+     * @param usernameCaseConversion            username case sensitive settings.
+     * @param binding                           SAML binding method.
+     */
+
+    def securityRealm = new SamlSecurityRealm(
+            new String(idpMetadata.decodeBase64()),
+            displayNameAttributeName,
+            groupsAttributeName,
+            maximumAuthenticationLifetime.toInteger(),
+            usernameAttributeName,
+            emailAttributeName,
+            logoutUrl ?: null,
+            null,
+            null,
+            usernameCaseConversion ?: null,
+            binding ?: null
+    )
+
+    jenkins.setSecurityRealm(securityRealm)
+
+    def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+    strategy.setAllowAnonymousRead(false)
+    jenkins.setAuthorizationStrategy(strategy)
+
+    jenkins.save()
+}
+
+// Configure Authorization Strategy ('SAML', 'GitHub' or 'Matrix')
 def jenkinsAuthorizationStrategy = env.JENKINS_AUTHORIZATION_STRATEGY ?: 'Matrix'
-if (jenkinsAuthorizationStrategy == "GitHub") {
-    configureGitHubAuthorizationStrategy(
-            env.JENKINS_GITHUB_CLIENT_ID,
-            env.JENKINS_GITHUB_CLIENT_SECRET,
-            env.JENKINS_GITHUB_ADMINS,
-            env.JENKINS_GITHUB_ORG_NAMES,
-            env.JENKINS_GITHUB_OAUTH_SCOPES
-    )
-} else if (jenkinsAuthorizationStrategy == "Matrix") {
-    configureMatrixAuthorizationStrategy(
-            env.JENKINS_USER,
-            env.JENKINS_PASS
-    )
-} else {
-    throw new Throwable("Invalid 'JENKINS_AUTHORIZATION_STRATEGY'")
+switch (jenkinsAuthorizationStrategy) {
+    case "GitHub":
+        configureGitHubAuthorizationStrategy(
+                env.JENKINS_GITHUB_CLIENT_ID,
+                env.JENKINS_GITHUB_CLIENT_SECRET,
+                env.JENKINS_GITHUB_ADMINS,
+                env.JENKINS_GITHUB_ORG_NAMES,
+                env.JENKINS_GITHUB_OAUTH_SCOPES
+        )
+        break
+    case "Matrix":
+        configureMatrixAuthorizationStrategy(
+                env.JENKINS_USER,
+                env.JENKINS_PASS
+        )
+        break
+    case "SAML":
+        configureSAMLAuthorizationStrategy(
+                env.JENKINS_SAML_IDP_METADATA,
+                env.JENKINS_SAML_DISPLAY_NAME_ATTRIBUTE_NAME,
+                env.JENKINS_SAML_GROUPS_ATTRIBUTE_NAME,
+                env.JENKINS_SAML_MAXIMUM_AUTHENTICATION_LIFETIME,
+                env.JENKINS_SAML_USERNAME_ATTRIBUTE_NAME,
+                env.JENKINS_SAML_EMAIL_ATTRIBUTE_NAME,
+                env.JENKINS_SAML_LOGOUT_URL,
+                env.JENKINS_SAML_USERNAME_CASE_CONVERSION,
+                env.JENKINS_SAML_BINDING
+        )
+        break
+    default:
+        throw new Throwable("Invalid 'JENKINS_AUTHORIZATION_STRATEGY'")
 }
 
 // Set number of job executors

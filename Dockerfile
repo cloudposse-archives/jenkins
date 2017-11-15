@@ -1,5 +1,5 @@
 # https://hub.docker.com/r/jenkins/jenkins/tags/
-FROM jenkins/jenkins:2.89-alpine
+FROM jenkins/jenkins:2.90-alpine
 
 USER root
 
