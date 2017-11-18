@@ -4,6 +4,8 @@ import hudson.security.*
 import jenkins.model.*
 import jenkins.security.s2m.AdminWhitelistRule
 import org.jenkinsci.plugins.*
+import org.jenkinsci.plugins.saml.*
+
 
 def isValidString = { value ->
     if (value != null && value instanceof String && value.trim() != "") {
@@ -34,6 +36,7 @@ def configureGitHubAuthorizationStrategy = { clientId, clientSecret, admins, org
         throw new Throwable("'JENKINS_GITHUB_OAUTH_SCOPES' is required for GitHub Authorization Strategy")
     }
 
+    // https://github.com/mocleiri/github-oauth-plugin/blob/master/src/main/java/org/jenkinsci/plugins/GithubSecurityRealm.java
     def githubSecurityRealm = new GithubSecurityRealm(
             "https://github.com",
             "https://api.github.com",
@@ -51,7 +54,9 @@ def configureGitHubAuthorizationStrategy = { clientId, clientSecret, admins, org
             orgNames,  /*organizationNames*/
             true,      /*allowGithubWebHookPermission*/
             false,     /*allowCcTrayPermission*/
-            false)     /*allowAnonymousReadPermission*/
+            false,     /*allowAnonymousReadPermission*/
+            false      /*allowAnonymousJobStatusPermission*/
+    )
 
     jenkins.setSecurityRealm(githubSecurityRealm)
     jenkins.setAuthorizationStrategy(githubAuthorizationStrategy)
@@ -104,20 +109,20 @@ def configureSAMLAuthorizationStrategy = { idpMetadata,
         throw new Throwable("'JENKINS_SAML_EMAIL_ATTRIBUTE_NAME' is required")
     }
 
+    // https://github.com/jenkinsci/saml-plugin/blob/master/src/main/java/org/jenkinsci/plugins/saml/SamlSecurityRealm.java
     /**
-     * @param idpMetadata                       Identity provider Metadata.
-     * @param displayNameAttributeName          attribute that has the displayname.
-     * @param groupsAttributeName               attribute that has the groups.
-     * @param maximumAuthenticationLifetime     maximum time that an identification it is valid.
-     * @param usernameAttributeName             attribute that has the username.
-     * @param emailAttributeName                attribute that has the email.
-     * @param logoutUrl                         optional URL to redirect on logout.
-     * @param advancedConfiguration             advanced configuration settings.
-     * @param encryptionData                    encryption configuration settings.
-     * @param usernameCaseConversion            username case sensitive settings.
-     * @param binding                           SAML binding method.
+     * @param idpMetadata Identity provider Metadata.
+     * @param displayNameAttributeName attribute that has the displayname.
+     * @param groupsAttributeName attribute that has the groups.
+     * @param maximumAuthenticationLifetime maximum time that an identification it is valid.
+     * @param usernameAttributeName attribute that has the username.
+     * @param emailAttributeName attribute that has the email.
+     * @param logoutUrl optional URL to redirect on logout.
+     * @param advancedConfiguration advanced configuration settings.
+     * @param encryptionData encryption configuration settings.
+     * @param usernameCaseConversion username case sensitive settings.
+     * @param binding SAML binding method.
      */
-
     def securityRealm = new SamlSecurityRealm(
             new String(idpMetadata.decodeBase64()),
             displayNameAttributeName,
@@ -182,3 +187,4 @@ if (isValidString(env.JENKINS_NUM_EXECUTORS)) {
     num_executors = env.JENKINS_NUM_EXECUTORS.toInteger()
 }
 jenkins.setNumExecutors(num_executors)
+jenkins.save()
