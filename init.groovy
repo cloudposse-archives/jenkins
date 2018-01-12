@@ -1,6 +1,7 @@
 #!groovy
 
 import hudson.security.*
+import hudson.security.csrf.*
 import jenkins.model.*
 import jenkins.security.s2m.AdminWhitelistRule
 import org.jenkinsci.plugins.*
@@ -149,6 +150,9 @@ def configureSAMLAuthorizationStrategy = { idpMetadata,
 // Configure Authorization Strategy ('SAML', 'GitHub' or 'Matrix')
 def jenkinsAuthorizationStrategy = env.JENKINS_AUTHORIZATION_STRATEGY ?: 'Matrix'
 switch (jenkinsAuthorizationStrategy) {
+    case "None":
+        // Do nothing. We just don't want to override the security settings in Jenkins that were set up manually
+        break
     case "GitHub":
         configureGitHubAuthorizationStrategy(
                 env.JENKINS_GITHUB_CLIENT_ID,
@@ -187,4 +191,36 @@ if (isValidString(env.JENKINS_NUM_EXECUTORS)) {
     num_executors = env.JENKINS_NUM_EXECUTORS.toInteger()
 }
 jenkins.setNumExecutors(num_executors)
+
+// Enable CSRF protection
+jenkins.setCrumbIssuer(new DefaultCrumbIssuer(true))
+
+// Disable CLI over the remoting protocol for security
+jenkins.getDescriptor("jenkins.CLI").get().enabled = false
+
+// Disable old/unsafe agent protocols for security
+jenkins.agentProtocols = ["JNLP4-connect", "Ping"] as Set
+
+// disabled CLI access over TCP listener (separate port)
+def p = jenkins.AgentProtocol.all()
+p.each { x ->
+    if (x.name?.contains("CLI")) {
+        println "Removing protocol ${x.name}"
+        p.remove(x)
+    }
+}
+
+// disable CLI access over /cli URL
+def removal = { lst ->
+    lst.each { x ->
+        if (x.getClass().name.contains("CLIAction")) {
+            println "Removing extension ${x.getClass().name}"
+            lst.remove(x)
+        }
+    }
+}
+
+removal(jenkins.getExtensionList(hudson.model.RootAction.class))
+removal(jenkins.actions)
+
 jenkins.save()
