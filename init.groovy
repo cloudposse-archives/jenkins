@@ -8,6 +8,20 @@ import org.jenkinsci.plugins.*
 import org.jenkinsci.plugins.saml.*
 
 
+// get environment variables
+def environment_variables = System.getenv()
+def jenkins_url = environment_variables['JENKINS_URL']
+
+// get Jenkins location configuration
+def jenkinsLocationConfiguration = jenkins.model.JenkinsLocationConfiguration.get()
+
+// set Jenkins URL
+jenkinsLocationConfiguration.setUrl('https://' + jenkins_url)
+
+// save current Jenkins state to disk
+jenkinsLocationConfiguration.save()
+
+
 def isValidString = { value ->
     if (value != null && value instanceof String && value.trim() != "") {
         return true
