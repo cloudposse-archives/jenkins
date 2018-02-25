@@ -26,7 +26,7 @@ RUN adduser jenkins docker
 
 # generate a self-signed certificate and configure HTTPS
 ARG JENKINS_URL="jenkins.local"
-ARG COMPANY_NAME="Cloudposse Inc"
+ARG COMPANY_NAME="Cloud Posse, LLC"
 ARG COUNTRY_CODE="US"
 
 ENV JENKINS_URL=${JENKINS_URL} \
