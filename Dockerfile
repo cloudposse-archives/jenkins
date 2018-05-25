@@ -1,13 +1,26 @@
 # https://hub.docker.com/r/jenkins/jenkins/tags/
-FROM jenkins/jenkins:2.102-alpine
+FROM jenkins/jenkins:2.124
+
+ENV TERRAFORM_VERSION=0.11.7
 
 USER root
 
-RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh gettext make docker
+RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli
+
+
+RUN cd /tmp && \
+    wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /var/tmp/*
+
+RUN terraform -v
 
 # Allow the jenkins user to run docker
-RUN adduser jenkins docker
+RUN groupadd docker
+RUN usermod -aG docker jenkins
+#RUN adduser jenkins docker
 
 # Drop back to the regular jenkins user
 USER jenkins
