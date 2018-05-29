@@ -1,5 +1,5 @@
 # https://hub.docker.com/r/jenkins/jenkins/tags/
-FROM jenkins/jenkins:2.124
+FROM jenkins/jenkins:2.125
 
 ENV TERRAFORM_VERSION=0.11.7
 
