@@ -5,9 +5,14 @@ ENV TERRAFORM_VERSION=0.11.7
 
 USER root
 
-RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli
+RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli ruby
 
+# Install pip
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+RUN python get-pip.py
+RUN pip install netaddr
 
+# Download terraform binary
 RUN cd /tmp && \
     wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin && \
