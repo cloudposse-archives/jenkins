@@ -27,7 +27,6 @@ branch-api:2.0.20
 build-timeout:1.19
 build-token-root:1.4
 cloudbees-folder:6.4
-cloudbees-bitbucket-branch-source: 2.2.11
 credentials-binding:1.16
 credentials:2.1.16
 display-url-api:2.2.0
@@ -62,7 +61,6 @@ jquery-detached:1.2.1
 jquery:1.12.4-0
 junit:1.24
 kubernetes:1.6.1
-kubernetes-credentials: 0.3.1
 ldap:1.20
 mailer:1.21
 mapdb-api:1.0.9.0
