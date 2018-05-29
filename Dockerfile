@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettex
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 RUN python get-pip.py
 RUN pip install netaddr
+RUN pip install hcl
 
 # Download terraform binary
 RUN cd /tmp && \
