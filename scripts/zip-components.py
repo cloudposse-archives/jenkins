@@ -66,8 +66,8 @@ def get_components_to_zip(services_info_json):
 
 def run_zip_command(component):
     try:
-        logging.info("Zipping {}".format(component))
         component_path = "{}/{}".format(module_working_dir, component)
+        logging.info("Zipping {} from path {}".format(component, component_path))
         process_output = subprocess.check_output(["zip-python-terraform", component_path])
         logging.debug(process_output)
         zip_file = None

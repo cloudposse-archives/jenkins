@@ -1,3 +1,5 @@
 netaddr
 pyhcl
 sh
+virtualenv
+virtualenv-clone

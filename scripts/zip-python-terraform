@@ -37,7 +37,7 @@ if [[ ${prev_hash} != ${new_hash} ]]
     mkdir -p ${virtual_env_dir}
     cp -r src/* build/deployment/
 
-    [ "$USER" == 'go' ] && export TMPDIR="/agent/tmp" # hardcoded alternative tmp dir
+    export TMPDIR="/agent/tmp" # hardcoded alternative tmp dir
     export VIRTUAL_ENV_DISABLE_PROMPT=true
 
     virtualenv "$virtual_env_dir"
