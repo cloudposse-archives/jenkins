@@ -10,8 +10,6 @@ RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettex
 # Install pip
 ADD requirements.txt /root/requirements.txt
 RUN pip install -r /root/requirements.txt
-# Scripts
-ADD scripts /usr/bin/
 
 # Download terraform binary
 RUN cd /tmp && \
@@ -26,7 +24,10 @@ RUN terraform -v
 # Allow the jenkins user to run docker
 RUN groupadd docker
 RUN usermod -aG docker jenkins
-#RUN adduser jenkins docker
+
+# Scripts
+ADD scripts /usr/share/jenkins/scripts
+ENV PATH="/usr/share/jenkins/scripts:${PATH}"
 
 # Drop back to the regular jenkins user
 USER jenkins
