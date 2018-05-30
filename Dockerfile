@@ -28,7 +28,7 @@ RUN usermod -aG docker jenkins
 # Scripts
 ADD scripts /usr/share/jenkins/scripts
 RUN chown -R jenkins:jenkins /usr/share/jenkins/scripts
-RUN chmod 755 /usr/share/jenkins/scripts
+RUN chmod +x /usr/share/jenkins/scripts
 ENV PATH="/usr/share/jenkins/scripts:${PATH}"
 
 # Drop back to the regular jenkins user
