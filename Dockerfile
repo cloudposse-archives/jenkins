@@ -25,12 +25,14 @@ RUN terraform -v
 RUN groupadd docker
 RUN usermod -aG docker jenkins
 
-# Drop back to the regular jenkins user
-USER jenkins
-
 # Scripts
 ADD scripts /usr/share/jenkins/scripts
+RUN chown -R jenkins:jenkins /usr/share/jenkins/scripts
+RUN chmod 755 /usr/share/jenkins/scripts
 ENV PATH="/usr/share/jenkins/scripts:${PATH}"
+
+# Drop back to the regular jenkins user
+USER jenkins
 
 # 1. Disable Jenkins setup Wizard UI. The initial user and password will be supplied by Terraform via ENV vars during infrastructure creation
 # 2. Set Java DNS TTL to 60 seconds
