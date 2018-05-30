@@ -8,8 +8,10 @@ USER root
 RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli ruby python-pip
 
 # Install pip
-RUN pip install netaddr
-RUN pip install pyhcl
+ADD requirements.txt /root/requirements.txt
+RUN pip install -r /root/requirements.txt
+# Scripts
+ADD scripts /usr/bin/
 
 # Download terraform binary
 RUN cd /tmp && \
