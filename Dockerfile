@@ -5,7 +5,7 @@ ENV TERRAFORM_VERSION=0.11.7
 
 USER root
 
-RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli ruby python-pip
+RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli ruby python-pip htop
 
 # Install pip
 ADD requirements.txt /root/requirements.txt
