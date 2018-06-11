@@ -81,6 +81,7 @@ def has_module_file(module_dir):
     module_file = "{}/modules.tf".format(module_dir)
     try:
         sh.ls(module_file)
+        return module_file
     except sh.ErrorReturnCode as e:
         print("{} does not exist!".format(module_file))
         raise e
