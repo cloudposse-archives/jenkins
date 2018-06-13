@@ -1,0 +1,34 @@
+#!/bin/bash
+set -eu
+
+if [ $# -eq 1 ]
+  then
+    cd $1
+fi
+
+#pwd
+working_dir=$(pwd)
+virtual_env_dir="build/virtualenv"
+
+
+rm -rf build
+mkdir -p build/deployment
+mkdir -p ${virtual_env_dir}
+cp -r src/* build/deployment/
+
+export VIRTUAL_ENV_DISABLE_PROMPT=true
+
+virtualenv "$virtual_env_dir"
+source "$virtual_env_dir"/bin/activate
+
+python -m pip install six
+python -m pip install -r requirements.txt
+cp -r "$virtual_env_dir"/lib/python2.7/site-packages/* build/deployment/
+
+cd build/deployment;
+cd ../../; rm -r build/deployment ; rm -r $virtual_env_dir
+
+echo "ZIP_LOCATION=$working_dir/build/lambda.zip"
+
+
+
