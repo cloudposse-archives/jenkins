@@ -87,6 +87,16 @@ def has_module_file(module_dir):
         raise e
 
 
+def has_vars_file(module_dir):
+    vars_file = "{}/vars.tf".format(module_dir)
+    try:
+        sh.ls(vars_file)
+        return vars_file
+    except sh.ErrorReturnCode as e:
+        print("{} does not exist!".format(vars_file))
+        raise e
+
+
 def is_git_repo(module_dir):
     try:
         sh.git("-C", module_dir, "status")
