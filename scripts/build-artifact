@@ -1,14 +1,11 @@
 #!/bin/bash
 set -eu
 
-if [ $# -eq 1 ]
-  then
-    cd $1q
-fi
-
+ARTIFACT_PATH=$1
 ARTIFACT_VERSION=$2
 
 #pwd
+cd ${ARTIFACT_PATH}
 working_dir=$(pwd)
 virtual_env_dir="build/virtualenv"
 
