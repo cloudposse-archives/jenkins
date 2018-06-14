@@ -3,8 +3,10 @@ set -eu
 
 if [ $# -eq 1 ]
   then
-    cd $1
+    cd $1q
 fi
+
+ARTIFACT_VERSION=$2
 
 #pwd
 working_dir=$(pwd)
@@ -30,7 +32,7 @@ nice -n 10 zip -X -r ../lambda.zip *  -x "*.pyc"
 
 cd ../../; rm -r build/deployment ; rm -r $virtual_env_dir
 
-echo "ZIP_LOCATION=$working_dir/build/$1.zip"
+echo "ZIP_LOCATION=$working_dir/build/$1_$ARTIFACT_VERSION.zip"
 
 
 
