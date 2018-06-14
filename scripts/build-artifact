@@ -30,7 +30,7 @@ nice -n 10 zip -X -r ../lambda.zip *  -x "*.pyc"
 
 cd ../../; rm -r build/deployment ; rm -r $virtual_env_dir
 
-echo "ZIP_LOCATION=$working_dir/build/lambda.zip"
+echo "ZIP_LOCATION=$working_dir/build/$1.zip"
 
 
 
