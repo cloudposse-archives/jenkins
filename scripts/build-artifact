@@ -25,11 +25,11 @@ python -m pip install -r requirements.txt
 cp -r "$virtual_env_dir"/lib/python2.7/site-packages/* build/deployment/
 
 cd build/deployment;
-nice -n 10 zip -X -r "../$1.zip" *  -x "*.pyc"
+nice -n 10 zip -X -r ../lambda.zip *  -x "*.pyc"
 
 cd ../../; rm -r build/deployment ; rm -r $virtual_env_dir
 
-echo "ZIP_LOCATION=$working_dir/build/$1_$ARTIFACT_VERSION.zip"
+echo "ZIP_LOCATION=$working_dir/build/lambda.zip"
 
 
 
