@@ -1,8 +1,6 @@
 # https://hub.docker.com/r/jenkins/jenkins/tags/
 FROM jenkins/jenkins:2.125
 
-ENV TERRAFORM_VERSION=0.11.7
-
 USER root
 
 RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli ruby python-pip htop
@@ -12,14 +10,24 @@ ADD requirements.txt /root/requirements.txt
 RUN pip install -r /root/requirements.txt
 
 # Download terraform binary
+ENV TERRAFORM_VERSION=0.11.7
 RUN cd /tmp && \
     wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin && \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/* && \
     rm -rf /var/tmp/*
-
 RUN terraform -v
+
+# Download packer binary
+ENV PACKER_VERSION=1.2.4
+RUN cd /tmp && \
+    wget https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip && \
+    unzip packer_${PACKER_VERSION}_linux_amd64.zip -d /usr/bin && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /var/tmp/*
+RUN packer -v
 
 # Allow the jenkins user to run docker
 RUN groupadd docker
