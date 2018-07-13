@@ -3,7 +3,7 @@ FROM jenkins/jenkins:2.125
 
 USER root
 
-RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli ruby python-pip htop
+RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli ruby python-pip htop libssl-dev libreadline-dev zlib1g-dev ffmpeg
 
 # Install pip
 ADD requirements.txt /root/requirements.txt
