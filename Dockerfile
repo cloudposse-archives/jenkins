@@ -47,7 +47,8 @@ ARG git_group=git
 ARG git_uid=1001
 ARG git_gid=1001
 RUN mkdir -p $GIT_HOME \
-  && chown ${git_uid}:${git_gid} $GIT_HOME \
+  && mkdir $GIT_HOME/.ssh/ \
+  && chown -R ${git_uid}:${git_gid} $GIT_HOME \
   && groupadd -g ${git_gid} ${git_group} \
   && useradd \
         -m -d "$GIT_HOME" \
