@@ -4,10 +4,21 @@ FROM jenkins/jenkins:2.125
 USER root
 
 RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli ruby python-pip htop libssl-dev libreadline-dev zlib1g-dev ffmpeg
+RUN apt-get install -y supervisor
+RUN apt-get install -y python3
 
 # Install pip
 ADD requirements.txt /root/requirements.txt
 RUN pip install -r /root/requirements.txt
+
+# Install m2a-git-mirror
+RUN virtualenv /opt/m2a-git-mirror/ -p python3.5
+RUN /opt/m2a-git-mirror/bin/pip \
+    install git+https://bitbucket.org/m2amedia/m2a-git-mirror.git
+RUN ln -s /opt/m2a-git-mirror/bin/m2a-git-mirror /usr/bin
+
+# Install service configurations
+COPY supervisor/ /etc/supervisor/conf.d/
 
 # Download terraform binary
 ENV TERRAFORM_VERSION=0.11.7
@@ -28,6 +39,25 @@ RUN cd /tmp && \
     rm -rf /var/cache/apk/* && \
     rm -rf /var/tmp/*
 RUN packer -v
+
+# Initialise and configure Git mirrors
+ENV GIT_HOME /var/git/
+ARG git_user=git
+ARG git_group=git
+ARG git_uid=1001
+ARG git_gid=1001
+RUN mkdir -p $GIT_HOME \
+  && chown ${git_uid}:${git_gid} $GIT_HOME \
+  && groupadd -g ${git_gid} ${git_group} \
+  && useradd \
+        -m -d "$GIT_HOME" \
+        -u ${git_uid} \
+        -g ${git_gid} \
+        -s /bin/bash ${git_user}
+USER git
+RUN m2a-git-mirror initialise
+RUN m2a-git-mirror add git@bitbucket.org:m2amedia/m2a-packer.git
+USER root
 
 # Allow the jenkins user to run docker
 RUN groupadd docker
@@ -63,3 +93,8 @@ COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY init-ec2.groovy /usr/share/jenkins/ref/init.groovy.d/
 
 EXPOSE 8080
+
+# Use Supervisor to run Jenkins and other services. Supervisor will
+# handle de-escalating service permissions.
+USER root
+ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/supervisord", "-n", "-e", "debug"]
