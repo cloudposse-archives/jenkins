@@ -99,4 +99,4 @@ EXPOSE 8080
 # Use Supervisor to run Jenkins and other services. Supervisor will
 # handle de-escalating service permissions.
 USER root
-ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/supervisord", "-n", "-e", "debug"]
+ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/supervisord", "-n"]
