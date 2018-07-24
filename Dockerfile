@@ -55,6 +55,7 @@ RUN mkdir -p $GIT_HOME \
         -u ${git_uid} \
         -g ${git_gid} \
         -s /bin/bash ${git_user}
+VOLUME $GIT_HOME/.ssh/
 USER git
 RUN m2a-git-mirror initialise
 RUN m2a-git-mirror add git@bitbucket.org:m2amedia/m2a-packer.git
