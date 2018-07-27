@@ -40,7 +40,7 @@ RUN cd /tmp && \
     rm -rf /var/tmp/*
 RUN packer -v
 
-# Initialise and configure Git mirrors
+# Add user for managing Git mirrors
 ENV GIT_HOME /var/git/
 ARG git_user=git
 ARG git_group=git
@@ -56,10 +56,8 @@ RUN mkdir -p $GIT_HOME \
         -g ${git_gid} \
         -s /bin/bash ${git_user}
 VOLUME $GIT_HOME/.ssh/
-USER git
-RUN m2a-git-mirror initialise
-RUN m2a-git-mirror add git@bitbucket.org:m2amedia/m2a-packer.git
-USER root
+RUN apt-get install -y sudo
+ADD sudoers/ /etc/sudoers.d/
 
 # Allow the jenkins user to run docker
 RUN groupadd docker
@@ -95,6 +93,9 @@ COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY init-ec2.groovy /usr/share/jenkins/ref/init.groovy.d/
 
 EXPOSE 8080
+
+# Initialise and configure Git mirrors
+RUN sudo -u git m2a-git-mirror initialise
 
 # Use Supervisor to run Jenkins and other services. Supervisor will
 # handle de-escalating service permissions.

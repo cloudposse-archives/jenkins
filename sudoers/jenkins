@@ -1,0 +1,1 @@
+jenkins ALL=(git:git) NOPASSWD: /usr/bin/m2a-git-mirror *
