@@ -58,6 +58,7 @@ RUN mkdir -p $GIT_HOME \
 VOLUME $GIT_HOME/.ssh/
 RUN apt-get install -y sudo
 ADD sudoers/ /etc/sudoers.d/
+RUN chmod 440 /etc/sudoers.d/*
 
 # Allow the jenkins user to run docker
 RUN groupadd docker
