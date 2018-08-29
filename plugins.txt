@@ -115,3 +115,5 @@ workflow-step-api:2.15
 workflow-support:2.18
 ws-cleanup:0.34
 custom-tools-plugin:0.5
+ruby-runtime:0.12
+rbenv:0.0.17
