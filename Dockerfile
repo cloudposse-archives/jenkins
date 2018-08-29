@@ -3,7 +3,7 @@ FROM jenkins/jenkins:2.125
 
 USER root
 
-RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli ruby python-pip htop libssl-dev libreadline-dev zlib1g-dev ffmpeg
+RUN apt-get update && apt-get install -y bash git wget openssh-server vim gettext make docker awscli ruby ruby-build python-pip htop libssl-dev libreadline-dev zlib1g-dev ffmpeg
 RUN apt-get install -y supervisor
 RUN apt-get install -y python3
 
