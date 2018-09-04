@@ -155,8 +155,8 @@ def get_module_name_from_url(url):
 
 
 def copy_release_file(env_from, env_to, version_from_source, new_version):
-    copy2("/m2a-releases/{}/{}".format(env_from, version_from_source),
-          "/m2a-releases/{}/{}".format(env_to, new_version))
+    copy2("m2a-releases/{}/{}".format(env_from, version_from_source),
+          "m2a-releases/{}/{}".format(env_to, new_version))
 
 
 if target_env is None:
