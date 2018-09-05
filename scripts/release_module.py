@@ -27,7 +27,7 @@ def copy_release_file(module, source_env, target_env, artifact_id):
     with open('m2a-releases/{}/{}.json'.format(source_env, module)) as source_file:
         data = json.load(source_file)
 
-    logging.info("Updating module SHA from {} to {}".format(data["sha"], artifact_id))
+    logging.info("Updating module SHA from {} to {}".format(data["artifact_id"], artifact_id))
     data["artifact_id"] = artifact_id
     create_release_file(target_env, module, data)
 
