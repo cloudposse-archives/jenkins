@@ -24,9 +24,10 @@ VERSION = args.version
 
 
 def copy_release_file(module, source_env, target_env, version):
-    with open('m2a-releases/{}/{}.json'.format(source_env, module)) as file:
-        data = json.load(file)
+    with open('m2a-releases/{}/{}.json'.format(source_env, module)) as source_file:
+        data = json.load(source_file)
 
+    logging.info("Updating module SHA from {} to {}".format(data["sha"], version))
     data["sha"] = version
     create_release_file(target_env, module, version)
 
@@ -42,3 +43,5 @@ def create_release_file(target_env, module, content):
 
     with open(path_to, "w+") as new_file:
         json.dump(content, new_file)
+
+
