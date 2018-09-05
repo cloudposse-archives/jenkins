@@ -12,8 +12,8 @@ LOGGER = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="Create a release file")
 parser.add_argument('--module', help='The module we are deploying')
-parser.add_argument('--source_env', help='The environment we are deploying from')
-parser.add_argument('--target_env', help='The environment we are deploying too')
+parser.add_argument('--source-env', help='The environment we are deploying from')
+parser.add_argument('--target-env', help='The environment we are deploying too')
 
 args = parser.parse_args()
 MODULE = args.module
