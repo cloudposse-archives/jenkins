@@ -6,24 +6,41 @@ ARTIFACT_VERSION=$2
 
 #pwd
 cd ${ARTIFACT_PATH}
+
 working_dir=$(pwd)
-virtual_env_dir="build/virtualenv"
+
+if [ -f "Pipfile.lock" ]; then
+    dependencies='Pipfile.lock'
+else
+    dependencies='requirements.txt'
+fi
 
 
 rm -rf build
 mkdir -p build/deployment
-mkdir -p ${virtual_env_dir}
+
+if [ -f "Pipfile.lock" ]; then
+    pipenv install --ignore-pipfile
+    site_packages=$(pipenv run python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+    cp -r "${site_packages}"/* build/deployment/
+else
+    virtual_env_dir="build/virtualenv"
+    mkdir -p ${virtual_env_dir}
+    export VIRTUAL_ENV_DISABLE_PROMPT=true
+
+    virtualenv "$virtual_env_dir"
+    source "$virtual_env_dir"/bin/activate
+
+    python -m pip install --no-cache-dir -r requirements.txt
+    site_packages="$virtual_env_dir"/lib/python2.7/site-packages
+    cp -r "${site_packages}"/* build/deployment/
+    rm -r "$virtual_env_dir"
+fi
+
 cp -r src/* build/deployment/
 
-export VIRTUAL_ENV_DISABLE_PROMPT=true
-
-virtualenv "$virtual_env_dir"
-source "$virtual_env_dir"/bin/activate
-
-python -m pip install --no-cache-dir -r requirements.txt
-cp -r "$virtual_env_dir"/lib/python2.7/site-packages/* build/deployment/
-
 cd build/deployment;
+
 zip -X -r ../lambda.zip *  -x "*.pyc"
 
 cd ../../; rm -r build/deployment ; rm -r $virtual_env_dir
