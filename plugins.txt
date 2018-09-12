@@ -63,7 +63,7 @@ kubernetes:1.2
 ldap:1.19
 mailer:1.20
 mapdb-api:1.0.9.0
-matrix-auth:2.2
+matrix-auth:2.3
 matrix-project:1.12
 metrics:3.1.2.10
 momentjs:1.1.1
