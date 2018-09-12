@@ -19,6 +19,38 @@ def env = System.getenv()
 def jenkins = Jenkins.getInstance()
 jenkins.getInjector().getInstance(AdminWhitelistRule.class).setMasterKillSwitch(false)
 
+def configureGitHubMatrixAuthorizationStrategy = { clientId, clientSecret, admins, orgNames, oauthScopes ->
+    if (!isValidString(clientId)) {
+        throw new Throwable("'JENKINS_GITHUB_CLIENT_ID' is required for GitHub Authorization Strategy")
+    }
+    if (!isValidString(clientSecret)) {
+        throw new Throwable("'JENKINS_GITHUB_CLIENT_SECRET' is required for GitHub Authorization Strategy")
+    }
+    if (!isValidString(admins)) {
+        throw new Throwable("'JENKINS_GITHUB_ADMINS' is required for GitHub Authorization Strategy")
+    }
+    if (!isValidString(orgNames)) {
+        throw new Throwable("'JENKINS_GITHUB_ORG_NAMES' is required for GitHub Authorization Strategy")
+    }
+    if (!isValidString(oauthScopes)) {
+        throw new Throwable("'JENKINS_GITHUB_OAUTH_SCOPES' is required for GitHub Authorization Strategy")
+    }
+
+    // https://github.com/mocleiri/github-oauth-plugin/blob/master/src/main/java/org/jenkinsci/plugins/GithubSecurityRealm.java
+    def githubSecurityRealm = new GithubSecurityRealm(
+            "https://github.com",
+            "https://api.github.com",
+            clientId,
+            clientSecret,
+            oauthScopes
+    )
+
+    jenkins.setSecurityRealm(githubSecurityRealm)
+    jenkins.setAuthorizationStrategy(new GlobalMatrixAuthorizationStrategy())
+    jenkins.getAuthorizationStrategy().add(Jenkins.ADMINISTER, admins)
+    jenkins.save()
+}
+
 // Configure Github Authentication Security Realm and GitHub Committer Authorization Strategy
 def configureGitHubAuthorizationStrategy = { clientId, clientSecret, admins, orgNames, oauthScopes ->
     if (!isValidString(clientId)) {
@@ -152,6 +184,15 @@ def jenkinsAuthorizationStrategy = env.JENKINS_AUTHORIZATION_STRATEGY ?: 'Matrix
 switch (jenkinsAuthorizationStrategy) {
     case "None":
         // Do nothing. We just don't want to override the security settings in Jenkins that were set up manually
+        break
+    case "GitHubMatrix":
+        configureGitHubMatrixAuthorizationStrategy(
+            env.JENKINS_GITHUB_CLIENT_ID,
+            env.JENKINS_GITHUB_CLIENT_SECRET,
+            env.JENKINS_GITHUB_ADMIN_GROUP,
+            env.JENKINS_GITHUB_ORG_NAMES,
+            env.JENKINS_GITHUB_OAUTH_SCOPES
+        )
         break
     case "GitHub":
         configureGitHubAuthorizationStrategy(
