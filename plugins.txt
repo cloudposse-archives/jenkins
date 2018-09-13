@@ -124,4 +124,4 @@ github-organization-folder:1.6
 docker-build-step:2.0
 blueocean-core-js:1.8.2
 amazon-ecr:1.6
-amazon-ecs@1.16
+amazon-ecs:1.16
