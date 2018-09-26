@@ -1,12 +1,16 @@
 #!groovy
 
+import hudson.model.*
+import hudson.tools.*
+import hudson.plugins.*
 import hudson.security.*
 import hudson.security.csrf.*
+import hudson.security.SecurityRealm.*
 import jenkins.model.*
 import jenkins.security.s2m.AdminWhitelistRule
 import org.jenkinsci.plugins.*
+import org.jenkinsci.plugins.oic.*
 import org.jenkinsci.plugins.saml.*
-
 
 def isValidString = { value ->
     if (value != null && value instanceof String && value.trim() != "") {
@@ -147,8 +151,152 @@ def configureSAMLAuthorizationStrategy = { idpMetadata,
     jenkins.save()
 }
 
+def configureOICAuthorizationStrategy = { clientId,
+                                          clientSecret,
+                                          tokenServerUrl,
+                                          authorizationServerUrl,
+                                          userInfoServerUrl,
+                                          userNameField,
+                                          tokenFieldToCheckKey,
+                                          tokenFieldToCheckValue,
+                                          fullNameFieldName,
+                                          emailFieldName,
+                                          scopes,
+                                          groupsFieldName,
+                                          disableSslVerification,
+                                          logoutFromOpenidProvider,
+                                          endSessionUrl,
+                                          postLogoutRedirectUrl,
+                                          escapeHatchEnabled,
+                                          escapeHatchUsername,
+                                          escapeHatchSecret,
+                                          escapeHatchGroup ->
+    println "configureOICAuthorizationStrategy()"
+
+    if (!isValidString(clientId)) {
+        throw new Throwable("'JENKINS_OIC_CLIENT_ID' is required")
+    }
+    if (!isValidString(clientSecret)) {
+        throw new Throwable("'JENKINS_OIC_CLIENT_SECRET' is required")
+    }
+
+    if (!isValidString(tokenServerUrl)) {
+        throw new Throwable("'JENKINS_OIC_TOKEN_SERVER_URL' is required")
+    }
+
+    if (!isValidString(authorizationServerUrl)) {
+        throw new Throwable("'JENKINS_OIC_AUTHORIZATION_SERVER_URL' is required")
+    }
+
+    /* 'JENKINS_OIC_USER_INFO_SERVER_URL' is optional */
+
+    if (!isValidString(userNameField)) {
+        throw new Throwable("'JENKINS_OIC_USER_NAME_FIELD' is required")
+    }
+
+    /*  JENKINS_OIC_TOKEN_FIELD_TO_CHECK_KEY' is optional */
+
+    /*  JENKINS_OIC_TOKEN_FIELD_TO_CHECK_VALUE' is optoinal */
+
+    if (!isValidString(fullNameFieldName)) {
+        throw new Throwable("'JENKINS_OIC_FULL_NAME_FIELD_NAME' is required")
+    }
+
+    if (!isValidString(emailFieldName)) {
+        throw new Throwable("'JENKINS_OIC_EMAIL_FIELD_NAME' is required")
+    }
+
+    if (!isValidString(scopes)) {
+        throw new Throwable("'JENKINS_OIC_SCOPES)' is required")
+    }
+
+    /* 'JENKINS_OIC_GROUPS_FIELD_NAME' is optional */
+
+    if (!isValidString(disableSslVerification)) {
+        throw new Throwable("'JENKINS_OIC_DISABLE_SSL_VERIFICATION' is required")
+    }
+
+    if (!isValidString(logoutFromOpenidProvider)) {
+        logoutFromOpenidProvider = "false"
+    }
+
+    if (logoutFromOpenidProvider.toBoolean() == true) {
+        if (!isValidString(endSessionUrl)) {
+            throw new Throwable("'JENKINS_OIC_END_SESSION_URL' is required")
+        }
+        if (!isValidString(postLogoutRedirectUrl)) {
+            throw new Throwable("'JENKINS_OIC_POST_LOGOUT_REDIRECT_URL' is required")
+        }
+    }
+
+    if (!isValidString(escapeHatchEnabled)) {
+        throw new Throwable("'JENKINS_OIC_ESCAPE_HATCH_ENABLED' is required")
+    }
+
+    if (escapeHatchEnabled.toBoolean() == true) {
+        if (!isValidString(escapeHatchUsername)) {
+            throw new Throwable("'JENKINS_OIC_ESCAPE_HATCH_USERNAME' is required")
+        }
+
+        if (!isValidString(escapeHatchSecret)) {
+            throw new Throwable("'JENKINS_OIC_ESCAPE_HATCH_SECRET' is required")
+        }
+
+        if (!isValidString(escapeHatchGroup)) {
+            throw new Throwable("'JENKINS_OIC_ESCAPE_HATCH_GROUP' is required")
+        }
+    }
+
+    // https://github.com/jenkinsci/oic-auth-plugin/blob/master/src/main/java/org/jenkinsci/plugins/oic/OicSecurityRealm.java
+    /**
+     * @param clientId Client ID used by jenkins to authenticate itself to the openid connect provider
+     * @param clientSecret Client secret used by jenkins to authenticate itself to the openid connect provider
+     * @param tokenServerUrl Token server URL used by jenkins to obtain tokens
+     * @param authorizationServerUrl Authorization server URL used by jenkins to authenticate with the openid connect provider
+     * @param userInfoServerUrl Userinfo URL of the openid connect provider
+     * @param userNameField Field within token used to obtain jenkins user's username
+     * @param tokenFieldToCheckKey If specified, users are required to have this field match the value to successfully login
+     * @param tokenFieldToCheckValue If specified, users are required to have this field match the value to successfully login
+     * @param fullNameFieldName Field within token used to obtain jenkins user's full user name
+     * @param emailFieldName  Field within token used to obtain jenkins user's email address
+     * @param scopes Scopes to request to be included in response from openid connect provider
+     * @param groupsFieldName Name of field that lists the user's groups
+     * @param disableSslVerification Disable verification of SSL cert
+     * @param logoutFromOpenidProvider When user logs out of jenkins they also log out of openid connect provider
+     * @param endSessionUrl URL to openid connect provider logout endpotin
+     * @param postLogoutRedirectUrl URL to which user is sent after logout completes.
+     * @param escapeHatchEnabled Enable escape hatch to provide alternative login mechanism (should OIC be unavailable)
+     * @param escapeHatchUsername Escape hatch username
+     * @param escapeHatchSecret Escape hatch password
+     * @param escapeHatchGroup Escape hatch user's group
+     */
+    def securityRealm
+
+    securityRealm = new OicSecurityRealm(clientId, clientSecret,
+                        tokenServerUrl, authorizationServerUrl, userInfoServerUrl,
+                        userNameField, tokenFieldToCheckKey, tokenFieldToCheckValue, fullNameFieldName, emailFieldName,
+                        scopes,
+                        groupsFieldName,
+                        disableSslVerification.toBoolean(),
+                        logoutFromOpenidProvider.toBoolean(),
+                        endSessionUrl, postLogoutRedirectUrl,
+                        escapeHatchEnabled.toBoolean(), escapeHatchUsername, escapeHatchSecret, escapeHatchGroup
+    )
+
+    jenkins.setSecurityRealm(securityRealm)
+
+    def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+    strategy.setAllowAnonymousRead(false)
+    jenkins.setAuthorizationStrategy(strategy)
+
+    jenkins.save()
+}
+
 // Configure Authorization Strategy ('SAML', 'GitHub' or 'Matrix')
 def jenkinsAuthorizationStrategy = env.JENKINS_AUTHORIZATION_STRATEGY ?: 'Matrix'
+
+println "Jenkins Authorization Strategy ${jenkinsAuthorizationStrategy}"
+
 switch (jenkinsAuthorizationStrategy) {
     case "None":
         // Do nothing. We just don't want to override the security settings in Jenkins that were set up manually
@@ -179,6 +327,30 @@ switch (jenkinsAuthorizationStrategy) {
                 env.JENKINS_SAML_LOGOUT_URL,
                 env.JENKINS_SAML_USERNAME_CASE_CONVERSION,
                 env.JENKINS_SAML_BINDING
+        )
+        break
+    case "OIC":
+        configureOICAuthorizationStrategy(
+                env.JENKINS_OIC_CLIENT_ID,
+                env.JENKINS_OIC_CLIENT_SECRET,
+                env.JENKINS_OIC_TOKEN_SERVER_URL,
+                env.JENKINS_OIC_AUTHORIZATION_SERVER_URL,
+                env.JENKINS_OIC_USER_INFO_SERVER_URL,
+                env.JENKINS_OIC_USER_NAME_FIELD,
+                env.JENKINS_OIC_TOKEN_FIELD_TO_CHECK_KEY,
+                env.JENKINS_OIC_TOKEN_FIELD_TO_CHECK_VALUE,
+                env.JENKINS_OIC_FULL_NAME_FIELD_NAME,
+                env.JENKINS_OIC_EMAIL_FIELD_NAME,
+                env.JENKINS_OIC_SCOPES,
+                env.JENKINS_OIC_GROUPS_FIELD_NAME,
+                env.JENKINS_OIC_DISABLE_SSL_VERIFICATION,
+                env.JENKINS_OIC_LOGOUT_FROM_OPENID_PROVIDER,
+                env.JENKINS_OIC_END_SESSION_URL,
+                env.JENKINS_OIC_POST_LOGOUT_REDIRECT_URL,
+                env.JENKINS_OIC_ESCAPE_HATCH_ENABLED,
+                env.JENKINS_OIC_ESCAPE_HATCH_USERNAME,
+                env.JENKINS_OIC_ESCAPE_HATCH_SECRET,
+                env.JENKINS_OIC_ESCAPE_HATCH_GROUP
         )
         break
     default:
