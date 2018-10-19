@@ -29,6 +29,6 @@ RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/
 
 # Configure `Amazon EC2` plugin to start slaves on demand
-COPY init-ec2.groovy /usr/share/jenkins/ref/init.groovy.d/
+# COPY init-ec2.groovy /usr/share/jenkins/ref/init.groovy.d/
 
 EXPOSE 8080
