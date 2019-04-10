@@ -11,6 +11,7 @@ RUN adduser jenkins docker
 
 # Drop back to the regular jenkins user
 USER jenkins
+ARG http_port=8888
 
 # 1. Disable Jenkins setup Wizard UI. The initial user and password will be supplied by Terraform via ENV vars during infrastructure creation
 # 2. Set Java DNS TTL to 60 seconds
@@ -19,6 +20,7 @@ USER jenkins
 # https://aws.amazon.com/articles/4035
 # https://stackoverflow.com/questions/29579589/whats-the-recommended-way-to-set-networkaddress-cache-ttl-in-elastic-beanstalk
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Dhudson.DNSMultiCast.disabled=true -Djava.awt.headless=true -Dsun.net.inetaddr.ttl=60 -Duser.timezone=PST -Dorg.jenkinsci.plugins.gitclient.Git.timeOut=60"
+ENV JENKINS_OPTS --httpPort=${http_port}
 
 # Preinstall plugins
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
@@ -30,5 +32,3 @@ COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/
 
 # Configure `Amazon EC2` plugin to start slaves on demand
 # COPY init-ec2.groovy /usr/share/jenkins/ref/init.groovy.d/
-
-EXPOSE 8080
