@@ -17,8 +17,8 @@ phases:
     commands:
       - echo "Build completed on $(date)"
       - echo "Pushing the Docker image to ECR..."
-      - docker push 237844026185.dkr.ecr.us-east-1.amazonaws.com/saic-prod-jenkins:${IMAGE_TAG}
-      - docker push 237844026185.dkr.ecr.us-east-1.amazonaws.com/saic-prod-jenkins:${STAGE}      
+      - docker push 237844026185.dkr.ecr.us-east-1.amazonaws.com/saic-prod-jenkins:latest
+      - docker push 237844026185.dkr.ecr.us-east-1.amazonaws.com/saic-prod-jenkins:prod
       - envsubst < "Dockerrun.aws.json.template" > "Dockerrun.aws.json"
 artifacts:
   files:
