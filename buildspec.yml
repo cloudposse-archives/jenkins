@@ -10,7 +10,7 @@ phases:
     commands:
       - echo "Build started on $(date)"
       - echo "Building the Docker image..."
-      - docker build --tag ${IMAGE_REPO_NAME} .
+      - docker build -t saic-prod-jenkins .
       - docker tag saic-prod-jenkins:latest 237844026185.dkr.ecr.us-east-1.amazonaws.com/saic-prod-jenkins:latest
       - docker tag saic-prod-jenkins:prod 237844026185.dkr.ecr.us-east-1.amazonaws.com/saic-prod-jenkins:prod
   post_build:
