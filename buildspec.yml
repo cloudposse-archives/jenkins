@@ -10,15 +10,13 @@ phases:
     commands:
       - echo "Build started on $(date)"
       - echo "Building the Docker image..."
-      - docker build --tag ${IMAGE_REPO_NAME} .
-      - docker tag ${IMAGE_REPO_NAME}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}
-      - docker tag ${IMAGE_REPO_NAME}:${STAGE} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${STAGE}
+      - docker build -t saic-prod-jenkins .
+      - docker tag saic-prod-jenkins:latest 237844026185.dkr.ecr.us-east-1.amazonaws.com/saic-prod-jenkins:latest
   post_build:
     commands:
       - echo "Build completed on $(date)"
       - echo "Pushing the Docker image to ECR..."
-      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}
-      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${STAGE}      
+      - docker push 237844026185.dkr.ecr.us-east-1.amazonaws.com/saic-prod-jenkins:latest
       - envsubst < "Dockerrun.aws.json.template" > "Dockerrun.aws.json"
 artifacts:
   files:
